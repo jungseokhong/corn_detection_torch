@@ -11,7 +11,7 @@ import random
 import argparse
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", default="./output/faster-rcnn-corn.pt",
+ap.add_argument("-m", "--model", default="./output/faster-rcnn-corn_bgr8.pt",
                 help="path to the model")
 ap.add_argument("-i", "--image", required=True, help="path to input image")
 ap.add_argument("-c", "--confidence", type=float, default=0.8, 
