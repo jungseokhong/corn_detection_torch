@@ -22,4 +22,4 @@ __Note__: `utils.py`, `transforms.py`, `coco_eval.py`, `coco_utils.py`, `engine.
 
 ## Pretrained weight
 
-If you want to use a pretrained weight, put the weight in output/ directory and run prediction right away.
+If you want to use a pretrained weight, put the weight in output/ directory and run prediction right away.[link](https://drive.google.com/file/d/1yf2qIMwuIY4Q9DvlYxcVmpbvJSuZ4QVt/view?usp=sharing)
