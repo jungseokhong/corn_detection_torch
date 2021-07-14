@@ -1,7 +1,7 @@
 # Faster R-CNN for corn detection with Pytorch
 Written based on https://github.com/haochen23/fine-tune-MaskRcnn
 
-Using '1.7.1+cu110' of pytorch.
+Using Pytorch `1.7.1+cu110`
 
 ## Usage
 __Train the model__
