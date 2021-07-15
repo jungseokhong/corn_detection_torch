@@ -35,8 +35,8 @@ def get_transform(train):
 
 if __name__ == "__main__":
     # use our dataset and defined transformations/ use same dataset for train and test for this
-    dataset = CornDataset('0707_corn/images_2', get_transform(train=True))
-    dataset_test = CornDataset('0707_corn/images_2', get_transform(train=False))
+    dataset = CornDataset('0707_corn/images', get_transform(train=True))
+    dataset_test = CornDataset('0707_corn/images', get_transform(train=False))
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
@@ -68,7 +68,7 @@ if __name__ == "__main__":
                                                    gamma=0.1)
     
     # number of epochs
-    num_epochs = 10
+    num_epochs = 100
     #start training
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
