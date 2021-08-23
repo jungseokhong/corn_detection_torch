@@ -13,6 +13,10 @@ import torchvision
 
 import random
 
+# TODO: run detection every Nth frame and take the frame with the highest number of detections.
+# Can we know that?
+# How to connect current detections with previous detection results?
+
 # construct the argument parse 
 parser = argparse.ArgumentParser(description='Script to run Object trackers using opencv')
 parser.add_argument("--video", help="path to video file. If empty, camera's stream will be used")
