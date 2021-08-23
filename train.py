@@ -68,15 +68,18 @@ if __name__ == "__main__":
                                                    gamma=0.1)
     
     # number of epochs
-    num_epochs = 100
-    #start training
-    for epoch in range(num_epochs):
-        # train for one epoch, printing every 10 iterations
-        train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
-        # update the learning rate
-        lr_scheduler.step()
-        # evaluate on the test dataset
-        evaluate(model, data_loader_test, device=device)
+    # num_epochs = 100
+    # #start training
+    # for epoch in range(num_epochs):
+    #     # train for one epoch, printing every 10 iterations
+    #     train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
+    #     # update the learning rate
+    #     lr_scheduler.step()
+    #     # evaluate on the test dataset
+    #     evaluate(model, data_loader_test, device=device)
     
     # save trained model for inference    
-    torch.save(model, './output/faster-rcnn-corn_bgr8.pt')
+    # torch.save(model, './output/faster-rcnn-corn_bgr8.pt')
+    model = torch.load('./output/faster-rcnn-corn_bgr8_ep100.pt')
+    model.to(device)
+    evaluate(model, data_loader_test, device=device)
