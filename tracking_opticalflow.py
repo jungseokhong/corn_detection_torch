@@ -13,6 +13,8 @@ import torchvision
 
 import random
 
+import operator
+
 # TODO: run detection every Nth frame and take the frame with the highest number of detections.
 # Can we know that?
 # How to connect current detections with previous detection results?
@@ -86,7 +88,7 @@ if args.output:
 # color_dict = dict()
 
 bbox_dict = dict()
-
+cnt = 0 ##########
 while True:
     _,frame = cap.read()
     if frame is None: #end of video file
@@ -101,10 +103,15 @@ while True:
 
         # only if there are predictions
         if pred_boxes != None:
+            corn_dict = dict()
+            for i in range(len(pred_boxes)):
+                corn_dict[i]=dict()
+            corn_dict['centroids']=dict()
 
             for i in range(len(pred_boxes)):
             # cv2.rectangle(img, boxes[i][0], boxes[i][1],color=(0, 255, 0), thickness=rect_th)
                 color = list(np.random.random(size=3) * 256)
+                # print("i color", i, color)
                 tracking_id = int(i)
                 confidence = pred_score[i]
 
@@ -115,13 +122,18 @@ while True:
 
                 # print class and confidence          
                 label = pred_class[i] +": "+ str(confidence)             
-                print(label) 
+                # print(label)
 
                 x = (xLeftBottom + xRightTop)/2
                 y = (yLeftBottom + yRightTop)/2
 
-                bbox_dict[tuple((x,y))]=[(xLeftBottom,yLeftBottom),(xRightTop,yRightTop)]
-        
+                corn_dict[i]['bbox'] = [(xLeftBottom,yLeftBottom),(xRightTop,yRightTop)]
+                corn_dict[i]['centroid'] =[(x,y)]
+                corn_dict['centroids'][tuple((x,y))]=[]
+
+                # bbox_dict[tuple((x,y))]=[(xLeftBottom,yLeftBottom),(xRightTop,yRightTop)]
+                # print("bbox_dict", bbox_dict)
+                frame = cv2.rectangle(frame,(xLeftBottom,yLeftBottom),(xRightTop,yRightTop), color, thickness=2) ### added today
                 # draw the centroid on the frame
                 frame = cv2.circle(frame, (int(x),int(y)), 15, color, -1)
                 print("before if STATE i %d frame %d x y: %d %d" % (i, total_frames, x, y))
@@ -131,10 +143,15 @@ while True:
                     centroids[0,0,0] = x
                     centroids[0,0,1] = y
                     color_dict[tuple(color)]=[(x,y)]
+                    bbox_dict[tuple((x,y))]=[(xLeftBottom,yLeftBottom),(xRightTop,yRightTop)]
+
                 else:
                     centroid = np.array([[[x,y]]],dtype=np.float32)
                     centroids = np.append(centroids,centroid,axis = 0)
                     color_dict[tuple(color)]=[(x,y)]
+                    bbox_dict[tuple((x,y))]=[(xLeftBottom,yLeftBottom),(xRightTop,yRightTop)]
+
+        original_centroids = centroids ########
         # else:
         #     color_dict=dict()
 
@@ -146,6 +163,10 @@ while True:
             good_new = next1[st==1]
             good_old = centroids[st==1]
 
+
+            # print("color dict", color_dict)
+            old_centroids = centroids
+
             for i, (new, old) in enumerate(zip(good_new, good_old)):
                 # Returns a contiguous flattened array as (x, y) coordinates for new point
                 a, b = new.ravel()
@@ -154,21 +175,35 @@ while True:
                 # distance between new and old points should be less than
                 # 200 for 2 points to be same the object
                 if distance < 200 :
+                    corn_dict['centroids'][corn_dict[i]['centroid'][0]].append((a,b))
                     for color, centroids_list in color_dict.items():
+                        # print("centroid list", centroids_list)
                         for centroids in centroids_list:
                             if centroids==(c,d):
                                 color_dict[color].append((a,b))
                                 color_old = color
-                    
+                                frame = cv2.circle(frame, (a, b), 15, color_old, -1)
                     for centroids, bbox in bbox_dict.items():
                         if centroids==(c,d):
                             bbox_coor = bbox
                     
-                    # frame = cv2.rectangle(frame, bbox_coor[0], bbox_coor[1], color_old, thickness=2)
-                    frame = cv2.circle(frame, (a, b), 15, color_old, -1)
+                    #### how to contorl id?
+                    res = tuple(map(operator.sub, (c,d),corn_dict[i]['centroid'][0]))
+                    new_bbox_coor1 = tuple(map(operator.add, corn_dict[i]['bbox'][0], res))
+                    new_bbox_coor2 = tuple(map(operator.add, corn_dict[i]['bbox'][1], res))
+                    new_bbox_coor1 = tuple(map(int, new_bbox_coor1))
+                    new_bbox_coor2 = tuple(map(int, new_bbox_coor2))
+
+                    frame = cv2.rectangle(frame, new_bbox_coor1, new_bbox_coor2, color_old, thickness=2) ### added today                    
+                    # frame = cv2.rectangle(frame, bbox_coor[0], bbox_coor[1], color_old, thickness=2) ### added today
+                    # frame = cv2.circle(frame, (a, b), 15, color_old, -1)
                     frame = cv2.putText(frame, str(total_frames), (100,100),cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 10, cv2.LINE_AA)
 
             centroids = good_new.reshape(-1, 1, 2)
+
+
+        # print(corn_dict)
+        # break
 
     total_frames += 1
     fps.update()
