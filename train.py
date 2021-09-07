@@ -16,7 +16,8 @@ import transforms as T
 
 def build_model(num_classes):
     # load an instance segmentation model pre-trained on COCO
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    # model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_320_fpn(pretrained=True)
     # get the number of input features for the classifier
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     # replace the pre-trained head with a new one
@@ -68,18 +69,18 @@ if __name__ == "__main__":
                                                    gamma=0.1)
     
     # number of epochs
-    # num_epochs = 100
+    num_epochs = 100
     # #start training
-    # for epoch in range(num_epochs):
-    #     # train for one epoch, printing every 10 iterations
-    #     train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
-    #     # update the learning rate
-    #     lr_scheduler.step()
-    #     # evaluate on the test dataset
-    #     evaluate(model, data_loader_test, device=device)
+    for epoch in range(num_epochs):
+        # train for one epoch, printing every 10 iterations
+        train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
+        # update the learning rate
+        lr_scheduler.step()
+        # evaluate on the test dataset
+        evaluate(model, data_loader_test, device=device)
     
     # save trained model for inference    
-    # torch.save(model, './output/faster-rcnn-corn_bgr8.pt')
-    model = torch.load('./output/faster-rcnn-corn_bgr8_ep100.pt')
+    torch.save(model, './output/faster-rcnn-mobile320-corn_bgr8.pt')
+    # model = torch.load('./output/faster-rcnn-mobile320-corn_bgr8_ep100.pt')
     model.to(device)
     evaluate(model, data_loader_test, device=device)
