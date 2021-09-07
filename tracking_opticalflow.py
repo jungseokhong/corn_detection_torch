@@ -202,7 +202,7 @@ while True:
             centroids = good_new.reshape(-1, 1, 2)
 
 
-        # print(corn_dict)
+        print(corn_dict)
         # break
 
     total_frames += 1
